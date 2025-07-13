@@ -86,14 +86,31 @@ public class BankLogic {
 	}
 	
 	
-	// lägga till sparkonto
+	
+	
+	// skapar ett sparkonto
 	public int createSavingsAccount(String personalNumber) {
-		for (Customer customer : customers) {
-			if (customer.getPersonalNumber().equals(personalNumber)) {
-				return customer.addAccount();// skapar och returnerar kontonummer
-			}
-		}
-		return -1;
+	    for (Customer customer : customers) {
+	        if (customer.getPersonalNumber().equals(personalNumber)) {
+	            SavingsAccount newAccount = new SavingsAccount();
+	            customer.getAccounts().add(newAccount); // Lägg till kontot till kundens lista
+	            return newAccount.getAccountNumber(); // Returnera kontonumret
+	        }
+	    }
+	    return -1;
+	}
+
+	
+	// skapar ett kreditkonto
+	public int createCreditAccount(String personalNumber) {
+	    for (Customer customer : customers) {
+	        if (customer.getPersonalNumber().equals(personalNumber)) {
+	            CreditAccount newAccount = new CreditAccount();
+	            customer.getAccounts().add(newAccount); // Lägg till kontot till kundens lista
+	            return newAccount.getAccountNumber(); // Returnera kontonumret
+	        }
+	    }
+	    return -1;
 	}
 	
 	
@@ -112,39 +129,67 @@ public class BankLogic {
 	}
 	
 	
-	// sätt in pengar i kontot
+	// för att slippa skriva om all BigDecimal till int för testbank filen
 	public boolean deposit(String personalNumber, int accountNumber, int amount) {
-		if (amount <= 0) {
-			return false;
-		}
-		for (Customer customer : customers) {
-			if (customer.getPersonalNumber().equals(personalNumber)) {
-				for (Account account : customer.getAccounts()) {
-					if (account.getAccountNumber() == accountNumber) {
-						return account.deposit(amount);
-					}
-				}
-			}
-		}
-		return false;
+	    return deposit(personalNumber, accountNumber, BigDecimal.valueOf(amount));
 	}
 	
 	
-	// ta ut pengar från kontot
+	// Sätt in pengar på ett konto
+	public boolean deposit(String personalNumber, int accountNumber, BigDecimal amount) {
+	    if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+	        return false;
+	    }
+	    for (Customer customer : customers) {
+	        if (customer.getPersonalNumber().equals(personalNumber)) {
+	            for (Account account : customer.getAccounts()) {
+	                if (account.getAccountNumber() == accountNumber) {
+	                    return account.deposit(amount);
+	                }
+	            }
+	        }
+	    }
+	    return false;
+	}
+	
+	
+	
+	// för att slippa skriva om all BigDecimal till int för testbank filen
 	public boolean withdraw(String personalNumber, int accountNumber, int amount) {
-		if (amount <= 0) {
-			return false;
-		}
-		for (Customer customer : customers) {
-			if (customer.getPersonalNumber().equals(personalNumber)) {
-				for (Account account : customer.getAccounts()) {
-					if (account.getAccountNumber() == accountNumber) {
-						return account.withdraw(amount);
-					}
-				}
-			}
-		}
-		return false;
+	    return withdraw(personalNumber, accountNumber, BigDecimal.valueOf(amount));
+	}
+	
+	// ta ut pengar från kontot
+	public boolean withdraw(String personalNumber, int accountNumber, BigDecimal amount) {
+	    if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+	        return false;
+	    }
+	    for (Customer customer : customers) {
+	        if (customer.getPersonalNumber().equals(personalNumber)) {
+	            for (Account account : customer.getAccounts()) {
+	                if (account.getAccountNumber() == accountNumber) {
+	                    return account.withdraw(amount);
+	                }
+	            }
+	        }
+	    }
+	    return false;
+	}
+	
+	
+	
+	// Hämtar transaktionshistorik för ett konto
+	public List<String> getTransactions(String personalNumber, int accountNumber) {
+	    for (Customer customer : customers) {
+	        if (customer.getPersonalNumber().equals(personalNumber)) {
+	            for (Account account : customer.getAccounts()) {
+	                if (account.getAccountNumber() == accountNumber) {
+	                    return account.getTransactions(); // Returnera transaktionshistorik
+	                }
+	            }
+	        }
+	    }
+	    return null; // Om kunden eller kontot inte hittades
 	}
 	
 	

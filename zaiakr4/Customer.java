@@ -36,14 +36,22 @@ public class Customer {
 	}
 	
 	
+	// Skapar sparkonto
+    public int addSavingsAccount() {
+        SavingsAccount newAccount = new SavingsAccount();
+        accounts.add(newAccount);
+        return newAccount.getAccountNumber();
+    }
 	
-	public int addAccount() {
-	    Account newAccount = new Account();
-	    accounts.add(newAccount);
-	    return newAccount.getAccountNumber();
-	}
 	
-	
+    // Skapar kreditkonto
+    public int addCreditAccount() {
+        CreditAccount newAccount = new CreditAccount();
+        accounts.add(newAccount);
+        return newAccount.getAccountNumber();
+    }
+    
+    
 	// Metoder för att hämta förnamn, efternamn samt personnummer
 	public String getFirstName() {
 		return firstName;
@@ -83,3 +91,4 @@ public class Customer {
 	}
 	
 }
+
