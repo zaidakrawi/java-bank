@@ -8,6 +8,8 @@ package zaiakr4;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CreditAccount extends Account {
     private static final BigDecimal CREDIT_LIMIT = BigDecimal.valueOf(-5000); // Kreditgräns -5000 kr
@@ -52,5 +54,15 @@ public class CreditAccount extends Account {
         } else {
             return BigDecimal.valueOf(5.0); // 5 % om saldot är negativt
         }
+    }
+    
+    
+    @Override
+    public List<String> getTransactions() {
+        List<String> transactionList = new ArrayList<>();
+        for (Transaction t : transactions) {
+            transactionList.add(t.getTransactionInfo());
+        }
+        return transactionList;
     }
 }

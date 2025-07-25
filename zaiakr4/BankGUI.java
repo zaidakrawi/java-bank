@@ -31,6 +31,16 @@ public class BankGUI extends JFrame{
         avslutaItem.addActionListener(e -> System.exit(0));
         menuArkiv.add(avslutaItem);
         menuBar.add(menuArkiv);
+        
+        //inl4
+        JMenuItem sparaBankItem = new JMenuItem("Spara bank till fil");
+        sparaBankItem.addActionListener(e -> sparaBank());
+        menuArkiv.add(sparaBankItem);
+        
+        //inl4
+        JMenuItem laddaBankItem = new JMenuItem("Ladda bank från fil");
+        laddaBankItem.addActionListener(e -> laddaBank());
+        menuArkiv.add(laddaBankItem);
 
         //Kund meny
         JMenu menuKund = new JMenu("Kund");
@@ -78,6 +88,10 @@ public class BankGUI extends JFrame{
         JMenuItem taBortKontoItem = new JMenuItem("Ta bort konto");
         taBortKontoItem.addActionListener(e -> taBortKontoDialog());
         menuKonto.add(taBortKontoItem);
+        
+        JMenuItem exporteraTransaktionerItem = new JMenuItem("Spara kontoutdrag till fil");
+        exporteraTransaktionerItem.addActionListener(e -> sparaTransaktionerTillFil());
+        menuKonto.add(exporteraTransaktionerItem);
 
         setJMenuBar(menuBar);
 
@@ -328,6 +342,55 @@ public class BankGUI extends JFrame{
             } else {
                 outputArea.setText("Ingen kund hittades med personnummer: " + pnr);
             }
+        }
+    }
+    
+    
+    private void sparaBank() {
+        String filename = "files/bank.dat";  // relativ sökväg
+
+        boolean lyckades = bank.saveBankToFile(filename);
+        if (lyckades) {
+            JOptionPane.showMessageDialog(this, "Banken sparades till fil.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Fel: Kunde inte spara banken till fil.");
+        }
+    }
+    
+    
+    private void laddaBank() {
+        String filename = "files/bank.dat";
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+            "Eventuella befintliga kunder kommer att raderas. Vill du fortsätta?",
+            "Ladda bank från fil", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            boolean lyckades = bank.loadBankFromFile(filename);
+            if (lyckades) {
+                JOptionPane.showMessageDialog(this, "Banken laddades från fil.");
+                outputArea.setText("Banken är nu uppdaterad med innehåll från fil.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Fel: Kunde inte läsa banken från fil.");
+            }
+        }
+    }
+    
+    
+    private void sparaTransaktionerTillFil() {
+        try {
+            String pnr = JOptionPane.showInputDialog(this, "Ange personnummer:");
+            int konto = Integer.parseInt(JOptionPane.showInputDialog(this, "Ange kontonummer:"));
+            String filnamn = "files/utdrag_" + konto + ".txt";
+
+            boolean lyckades = bank.exportTransactions(pnr, konto, filnamn);
+            if (lyckades) {
+                JOptionPane.showMessageDialog(this, "Transaktioner sparade till:\n" + filnamn);
+            } else {
+                JOptionPane.showMessageDialog(this, "Kunde inte spara transaktioner.");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Felaktig inmatning eller fel vid skrivning till fil.");
         }
     }
  

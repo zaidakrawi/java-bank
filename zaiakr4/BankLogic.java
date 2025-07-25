@@ -7,9 +7,17 @@ package zaiakr4;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
+import java.time.LocalDate;
 import java.util.Locale;
 
 
@@ -262,4 +270,79 @@ public class BankLogic {
 	    }
 	    return null; // Kunden hittades inte
 	}
+	
+	
+	public boolean saveBankToFile(String filename) {
+	    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filename))) {
+	        out.writeObject(customers); // spara kunslistan
+	        return true;
+	    } catch (IOException e) {
+	        e.printStackTrace(); //debug
+	        return false;
+	    }
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	public boolean loadBankFromFile(String filename) {
+	    try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filename))) {
+	        // Läs in listan
+	        List<Customer> loadedCustomers = (List<Customer>) in.readObject();
+
+	        // Töm nuvarande bank först
+	        customers.clear();
+
+	        // Lägg till inlästa kunder
+	        customers.addAll(loadedCustomers);
+
+	        // Uppdatera kontonummer till rätt nästa nummer
+	        int högsta = 1000;
+	        for (Customer c : customers) {
+	            for (Account a : c.getAccounts()) {
+	                if (a.getAccountNumber() > högsta) {
+	                    högsta = a.getAccountNumber();
+	                }
+	            }
+	        }
+	        Account.setNextAccountNumber(högsta + 1);
+
+	        return true;
+	    } catch (IOException | ClassNotFoundException e) {
+	        e.printStackTrace(); // För debug
+	        return false;
+	    }
+	}
+	
+	
+	
+	// metod för att spara transaktioner till en .txt fil
+	public boolean exportTransactions(String pNo, int accountId, String filepath) {
+	    for (Customer customer : customers) {
+	        if (customer.getPersonalNumber().equals(pNo)) {
+	            for (Account account : customer.getAccounts()) {
+	                if (account.getAccountNumber() == accountId) {
+	                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(filepath))) {
+
+	                        writer.write("Konto: " + accountId + "\n");
+	                        writer.write("Datum: " + LocalDate.now() + "\n\n");
+
+	                        List<String> transaktioner = account.getTransactions();
+	                        for (String t : transaktioner) {
+	                            writer.write(t + "\n");
+	                        }
+
+	                        writer.write("\nSaldo: " + account.getBalance().setScale(2) + " kr\n");
+
+	                        return true;
+	                    } catch (IOException e) {
+	                        e.printStackTrace();
+	                        return false;
+	                    }
+	                }
+	            }
+	        }
+	    }
+	    return false;
+	}
+	
 }

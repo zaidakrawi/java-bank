@@ -9,6 +9,8 @@ package zaiakr4;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class SavingsAccount extends Account {
@@ -58,4 +60,15 @@ public class SavingsAccount extends Account {
     public BigDecimal getInterestRate() {
         return BigDecimal.valueOf(2.4); // 2,4 % ränta
     }
+    
+    
+    @Override
+    public List<String> getTransactions() {
+        List<String> transactionList = new ArrayList<>();
+        for (Transaction t : transactions) {
+            transactionList.add(t.getTransactionInfo());
+        }
+        return transactionList;
+    }
+    
 }

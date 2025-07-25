@@ -1,5 +1,7 @@
 package zaiakr4;
 
+import java.io.Serializable;
+
 /**
  * Abstrakt klass
  * Hanterar saldo, räntesats, kontonummer och kontotyp
@@ -14,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public abstract class Account {
+public abstract class Account implements Serializable {
 	private static int nextAccountNumber = 1001;
 	protected int accountNumber;
 	protected BigDecimal balance;
@@ -93,14 +95,18 @@ public abstract class Account {
 	}
 	
 	
-	// Hämta transaktionshistorik
-    public List<String> getTransactions() {
-        List<String> transactionList = new ArrayList<>();
-        for (Transaction t : transactions) {
-            transactionList.add(t.getTransactionInfo());
-        }
-        return transactionList;
-    }
+//	// Hämta transaktionshistorik
+//    public List<String> getTransactions() {
+//        List<String> transactionList = new ArrayList<>();
+//        for (Transaction t : transactions) {
+//            transactionList.add(t.getTransactionInfo());
+//        }
+//        return transactionList;
+//    }
+	
+	public List<String> getTransactions() {
+	    return new ArrayList<>();
+	}
     
     //hämta konto info
     public String getAccountInfo() {
@@ -116,6 +122,16 @@ public abstract class Account {
         String interestStr = percentFormat.format(interestRate); 
 
         return accountNumber + " " + balanceStr + " " + accountType + " " + interestStr;
+    }
+    
+    
+    public static void setNextAccountNumber(int next) {
+        nextAccountNumber = next;
+    }
+    
+    
+    public static int getNextAccountNumber() {
+        return nextAccountNumber;
     }
 
 }
